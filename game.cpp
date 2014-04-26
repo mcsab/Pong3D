@@ -21,13 +21,57 @@ bool Game::init()
 
     m_video_driver  = m_device->getVideoDriver();
     m_scene_manager = m_device->getSceneManager();
-    m_scene_manager->addCameraSceneNode(0, vector3df(0, 30, -40), vector3df(0, 5, 0));
-
+    m_scene_manager->addCameraSceneNode(0, 
+            vector3df(0, 0, -m_map_size.Z - 7), 
+            vector3df(0, 0, m_map_size.Z)
+        );
 
     // TODO!
     // create rackets && ball
 
 } // init
+
+// ----------------------------------------------------------------------------
+void Game::drawFrame()
+{
+    SMaterial m;
+    m.Thickness = 0.3;
+    m.Lighting = false;
+    m_video_driver->setMaterial(m);
+    m_video_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
+    
+    for (int z = -m_map_size.Z; z < m_map_size.Z; z += 5)
+    {
+
+        for (int i = -1; i < 2; i += 2)
+            m_video_driver->draw3DLine(
+            vector3df(i * m_map_size.X / 2.0, m_map_size.Y / 2.0, z),
+            vector3df(i * m_map_size.X / 2.0, -m_map_size.Y / 2.0, z),
+            SColor(255, 0, 255, 0)
+            );
+
+        for (int i = -1; i < 2; i += 2)
+            m_video_driver->draw3DLine(
+            vector3df(-m_map_size.X / 2.0, i * m_map_size.Y / 2.0, z),
+            vector3df( m_map_size.X / 2.0, i * m_map_size.Y / 2.0, z),
+            SColor(255, 0, 255, 0)
+            );
+    }
+
+} // drawFrame
+
+// ----------------------------------------------------------------------------
+void Game::render()
+{
+
+    m_video_driver->beginScene(true, true, SColor(255, 80, 0, 170));
+    
+    m_scene_manager->drawAll();
+
+    drawFrame();
+     
+    m_video_driver->endScene();
+} // render
 
 
 // ----------------------------------------------------------------------------
@@ -50,9 +94,7 @@ void Game::play()
 {
     while (m_device->run())
     {
-        m_video_driver->beginScene(true, true, SColor(255, 100, 101, 140));
-        m_scene_manager->drawAll();
-        m_video_driver->endScene();
+        render();
     }
 } // play
 

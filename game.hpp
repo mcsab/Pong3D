@@ -27,10 +27,12 @@ private:
 
     Game(vector3df map_size, int ball_number);
     bool init();
+    void drawFrame();
+    void render();
 
 public:
 
-    static Game* createGame(vector3df map_size = vector3df(40, 40, 200),
+    static Game* createGame(vector3df map_size = vector3df(10, 10, 20),
         int ball_number = 5);
 
     void play();
