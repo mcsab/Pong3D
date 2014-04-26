@@ -1,8 +1,8 @@
-#include <iostream>
-
-using namespace std;
+#include "game.hpp"
 
 int main()
 {
-    cout << "Hello Repo!" << endl;
+    Game* game = Game::createGame();
+    game->play();
+    delete game;
 }
