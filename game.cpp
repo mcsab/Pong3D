@@ -1,8 +1,10 @@
 #include "game.hpp"
 
+#include "ball.hpp"
+
 using namespace video;
 
-/** The constructor sets map parameters and creates resources */
+
 Game::Game(vector3df map_size, int ball_number)
 {
     m_map_size    = map_size;
@@ -22,12 +24,21 @@ bool Game::init()
     m_video_driver  = m_device->getVideoDriver();
     m_scene_manager = m_device->getSceneManager();
     m_scene_manager->addCameraSceneNode(0, 
-            vector3df(0, 0, -m_map_size.Z - 7), 
+            vector3df(0, 0, - m_map_size.Z / 2.0 - 1.0), 
             vector3df(0, 0, m_map_size.Z)
         );
 
+    m_ball = new Ball(vector3df(0,0,0),1.2,m_map_size);
+    m_ball_node = m_scene_manager->addSphereSceneNode(1.2, 16, 0, -4);
+
+    if (!m_ball_node) return false;    
+    m_ball_node->setMaterialFlag(video::EMF_WIREFRAME, true);
+    m_ball_node->setMaterialFlag(video::EMF_LIGHTING, false);
+
+    m_ball->hit(vector3df(0.01, 0.02, 0.01));
+
     // TODO!
-    // create rackets && ball
+    // create ball
 
 } // init
 
@@ -40,7 +51,7 @@ void Game::drawFrame()
     m_video_driver->setMaterial(m);
     m_video_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
     
-    for (int z = -m_map_size.Z; z < m_map_size.Z; z += 5)
+    for (int z = -m_map_size.Z / 2.0; z < m_map_size.Z / 2.0; z += 5)
     {
 
         for (int i = -1; i < 2; i += 2)
@@ -75,6 +86,15 @@ void Game::render()
 
 
 // ----------------------------------------------------------------------------
+void Game::animate(int dt)
+{
+    m_ball->animate(dt,*m_player_racket,*m_ai_racket);
+    m_ball_node->setPosition(m_ball->getPosition());
+
+} // animate
+
+
+// ----------------------------------------------------------------------------
 Game* Game::createGame(vector3df map_size, int ball_number)
 {
     Game* game = new Game(map_size, ball_number);
@@ -92,9 +112,14 @@ Game* Game::createGame(vector3df map_size, int ball_number)
 // ----------------------------------------------------------------------------
 void Game::play()
 {
+    u32 currentTime;
+    u32 lastTime = m_device->getTimer()->getTime();
     while (m_device->run())
     {
         render();
+        currentTime = m_device->getTimer()->getTime();
+        animate((currentTime - lastTime));
+        lastTime = currentTime;
     }
 } // play
 

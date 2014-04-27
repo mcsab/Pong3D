@@ -24,15 +24,16 @@ private:
     Racket*                     m_player_racket;
     Racket*                     m_ai_racket;
 
+    irr::scene::ISceneNode*     m_ball_node;
 
     Game(vector3df map_size, int ball_number);
     bool init();
     void drawFrame();
     void render();
-
+    void animate(int dt);
 public:
 
-    static Game* createGame(vector3df map_size = vector3df(10, 10, 20),
+    static Game* createGame(vector3df map_size = vector3df(20, 20, 40),
         int ball_number = 5);
 
     void play();

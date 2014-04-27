@@ -5,7 +5,7 @@
 
 
 bool Ball::handleRacketCollision(const Racket& racket)
-{
+{/*
     vector2df racketSize = racket.getSize();
     vector2df racketPos = racket.getPosition();
 
@@ -16,8 +16,10 @@ bool Ball::handleRacketCollision(const Racket& racket)
     vector2df racketVelocity = racket.getVelocity();
 
     m_velocity.X += racketVelocity.X * 0.6;
-    m_velocity.Y += racketVelocity.Y * 0.6;
+    m_velocity.Y += racketVelocity.Y * 0.6;*/
     m_velocity.Z *= -1;
+
+    return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -28,26 +30,26 @@ GameEvent Ball::handleCollision(const Racket& backRacket,
     if (m_position.X + m_radius > m_map_size.X / 2.0)
     {
         m_velocity.X *= -1;
-        m_position.X = 2 * m_map_size.X - m_position.X - m_radius;
+        m_position.X = m_position.X - 2 * ( m_position.X + m_radius - m_map_size.X / 2.0 );
     }
     else // Left Wall
-    if (m_position.X - m_radius < m_map_size.X / 2.0)
+    if (m_position.X - m_radius < -m_map_size.X / 2.0)
     {
         m_velocity.X *= -1;
-        m_position.X = -2 * m_map_size.X + m_position.X + m_radius;
+        m_position.X = m_position.X + 2 * (fabs(m_position.X) + m_radius - m_map_size.X / 2.0);
     }
 
     // Top
     if (m_position.Y + m_radius > m_map_size.Y / 2.0)
     {
         m_velocity.Y *= -1;
-        m_position.Y = 2 * m_map_size.Y - m_position.Y - m_radius;
+        m_position.Y = m_position.Y - 2 * (m_position.Y + m_radius - m_map_size.Y / 2.0);
     } 
     else // Floor
-    if (m_position.Y - m_radius < m_map_size.Y / 2.0)
+    if (m_position.Y - m_radius < -m_map_size.Y / 2.0)
     {
         m_velocity.Y *= -1;
-        m_position.Y = -2 * m_map_size.Y + m_position.Y + m_radius;
+        m_position.Y = m_position.Y + 2 * (fabs(m_position.Y) + m_radius - m_map_size.Y / 2.0);
     }
 
     // front Wall ~ near lookAt << ai's side >>
@@ -55,14 +57,14 @@ GameEvent Ball::handleCollision(const Racket& backRacket,
     {
         if (!handleRacketCollision(frontRacket))
             return AI_FAILED;
-        m_position.Z = 2 * m_map_size.Z - m_position.Z - m_radius;
+        m_position.Z = m_position.Z - 2 * (m_position.Z + m_radius - m_map_size.Z / 2.0);
     } 
     else  // back Wall ~ near camera << player side >>
-    if (m_position.Z - m_radius < m_map_size.Z / 2.0)
+    if (m_position.Z - m_radius < -m_map_size.Z / 2.0)
     {
         if (!handleRacketCollision(backRacket))
             return PLAYER_FAILED;
-        m_position.Z = -2 * m_map_size.Z + m_position.Z + m_radius;
+        m_position.Z = m_position.Z + 2 * (fabs(m_position.Z) + m_radius - m_map_size.Z / 2.0);
     }
     return NOTHING;
 }

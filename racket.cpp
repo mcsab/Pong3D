@@ -16,7 +16,7 @@ void Racket::step()
 
 Racket::Racket(vector2df pos, vector2df size, vector3df map_size)
 {
-    m_speed = 1;
+    m_speed    = 1;
     m_position = pos;
     m_size     = size;
     map_size   = map_size;

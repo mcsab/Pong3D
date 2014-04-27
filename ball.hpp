@@ -19,8 +19,6 @@ enum GameEvent
 class Ball
 {
 private:
-    ISceneNode*     m_node;
-
     double          m_radius;
     vector3df       m_position;
     vector3df       m_velocity;
@@ -34,8 +32,9 @@ private:
 public:
     Ball(vector3df pos, double radius, vector3df map_size);
 
-    void hit(const vector3df& dv)                      { m_velocity += dv; }
-    void setPosition(const vector3df& pos)             { m_position = pos; }
+    void hit(const vector3df& dv)                      { m_velocity += dv;  }
+    void setPosition(const vector3df& pos)             { m_position = pos;  }
+    const vector3df& getPosition() const               { return m_position; }
 
     GameEvent animate(int dt, const Racket& backRacket, 
                               const Racket& frontRacket);
