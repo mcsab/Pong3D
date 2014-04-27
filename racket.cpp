@@ -2,11 +2,11 @@
 
 void Racket::step()
 {
-    double dist = (m_target - m_position).getLength;
+    double dist = (m_target - m_position).getLength();
     if (dist > 0.01)
     {
         m_position += m_velocity;
-        if ((m_target - m_position).getLength < dist)
+        if ((m_target - m_position).getLength() < dist)
         {
             m_position = m_target;
             m_velocity = vector2df(0, 0);
