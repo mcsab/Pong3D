@@ -37,15 +37,13 @@ bool Game::init()
     m_ball_node->setMaterialFlag(video::EMF_WIREFRAME, true);
     m_ball_node->setMaterialFlag(video::EMF_LIGHTING, false);
 
-    m_ball->hit(vector3df(0.01, 0.02, 0.01));
+    m_ball->setVelocity(vector3df(0, 0, 0.03));
 
-    m_player_racket_node = m_scene_manager->addSphereSceneNode(2.0);
-    m_player_racket_node->setScale(vector3df(1,1,0.1));
+
+    m_player_racket_node = m_scene_manager->addCubeSceneNode(1.0);
+    m_player_racket_node->setScale(vector3df(7,4,0.1));
     m_player_racket_node->setMaterialFlag(video::EMF_WIREFRAME, true);
     m_player_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
-
-    // TODO!
-    // create ball
 
     m_player_racket = new Racket();
 
@@ -90,17 +88,6 @@ void Game::render()
     m_scene_manager->drawAll();
 
     drawFrame();
-    /*
-    vector2df pos  = m_player_racket->getPosition();
-    vector2df size = m_player_racket->getSize();
-    m_video_driver->draw2DLine(
-        vector2d<s32>(pos.X - size.X / 2.0, pos.Y - size.Y / 2.0),
-        vector2d<s32>(pos.X + size.X / 2.0, pos.Y - size.Y / 2.0));
-    m_video_driver->draw2DLine(
-        vector2d<s32>(pos.X - size.X / 2.0, pos.Y + size.Y / 2.0),
-        vector2d<s32>(pos.X + size.X / 2.0, pos.Y + size.Y / 2.0));
-    */
-
     m_video_driver->endScene();
 } // render
 
@@ -129,10 +116,18 @@ void Game::racketControl()
 // ----------------------------------------------------------------------------
 void Game::animate(int dt)
 {
-    m_ball->animate(dt,*m_player_racket,*m_ai_racket);
+    
+    m_player_racket->animate(dt);
+
+    if (!m_ball->animate(dt, m_player_racket, m_ai_racket))
+    {
+        m_ball->setPosition(vector3df(0,0,0));
+        m_ball->setVelocity(vector3df(0, 0, 0));
+    }
+
     m_ball_node->setPosition(m_ball->getPosition());
 
-    m_player_racket->animate(dt);
+    
 
 } // animate
 

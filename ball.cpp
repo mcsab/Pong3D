@@ -4,27 +4,28 @@
 #include <math.h>
 
 
-bool Ball::handleRacketCollision(const Racket& racket)
+bool Ball::handleRacketCollision(Racket* racket)
 {
-    vector2df racketSize = racket.getSize();
-    vector2df racketPos = racket.getPosition();
+    vector2df racketSize = racket->getSize();
+    vector2df racketPos = racket->getPosition();
 
     if ((fabs(racketPos.X - m_position.X) > racketSize.X + m_radius)
         || (fabs(racketPos.Y - m_position.Y) > racketSize.Y + m_radius))
+    {
+        racket->fail();
         return false;
-    
-    vector2df racketVelocity = racket.getVelocity();
+    }
+    vector2df racketVelocity = racket->getVelocity();
 
-    m_velocity.X += racketVelocity.X * 0.1;
-    m_velocity.Y += racketVelocity.Y * 0.1;
+    m_velocity.X += racketVelocity.X * 0.01;
+    m_velocity.Y += racketVelocity.Y * 0.01;
     m_velocity.Z *= -1;
 
     return true;
 }
 
 // ----------------------------------------------------------------------------
-GameEvent Ball::handleCollision(const Racket& backRacket, 
-                                const Racket& frontRacket)
+bool Ball::handleCollision(Racket* backRacket, Racket* frontRacket)
 {
     // Right Wall
     if (m_position.X + m_radius > m_hmap_size.X)
@@ -58,7 +59,7 @@ GameEvent Ball::handleCollision(const Racket& backRacket,
         m_velocity.Z *= -1;
         /*
         if (!handleRacketCollision(frontRacket))
-            return AI_FAILED;
+            return false;
         m_position.Z = m_position.Z - 2 * (m_position.Z + m_radius - m_map_size.Z / 2.0);
         */
     } 
@@ -66,10 +67,10 @@ GameEvent Ball::handleCollision(const Racket& backRacket,
     if (m_position.Z - m_radius < -m_hmap_size.Z)
     {
         if (!handleRacketCollision(backRacket))
-            return PLAYER_FAILED;
+            return false;
         m_position.Z = m_position.Z + 2 * (fabs(m_position.Z) + m_radius - m_hmap_size.Z);
     }
-    return NOTHING;
+    return true;
 }
 
 // ----------------------------------------------------------------------------
@@ -82,20 +83,12 @@ Ball::Ball(vector3df pos, double radius, vector3df hmap_size)
 }
 
 // ----------------------------------------------------------------------------
-GameEvent Ball::animate(int dt, const Racket& backRacket, 
-                                const Racket& frontRacket)
+bool Ball::animate(int dt, Racket* backRacket, Racket* frontRacket)
 {
     for (int i = 0; i < dt; i++)
     {
         m_position += m_velocity;
-        switch (handleCollision(backRacket, frontRacket))
-        {
-        case PLAYER_FAILED:
-            return PLAYER_FAILED;
-        case AI_FAILED:
-            return AI_FAILED;
-        case NOTHING:
-            break;
-        }
+        if (!handleCollision(backRacket, frontRacket)) return false;
     }
+    return true;
 }

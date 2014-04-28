@@ -9,13 +9,6 @@ using namespace core;
 
 class Racket;
 
-enum GameEvent
-{
-    NOTHING,
-    PLAYER_FAILED,
-    AI_FAILED
-};
-
 class Ball
 {
 private:
@@ -25,19 +18,17 @@ private:
 
     vector3df       m_hmap_size;
 
-    bool            handleRacketCollision(const Racket& racket);
-    GameEvent       handleCollision (const Racket& backRacket, 
-                                     const Racket& frontRacket);
+    bool            handleRacketCollision(Racket* racket);
+    bool            handleCollision (Racket* backRacket, Racket* frontRacket);
 
 public:
     Ball(vector3df pos, double radius, vector3df hmap_size);
 
-    void hit(const vector3df& dv)                      { m_velocity += dv;  }
     void setPosition(const vector3df& pos)             { m_position = pos;  }
+    void setVelocity(const vector3df& vel)             { m_velocity = vel;  }
     const vector3df& getPosition() const               { return m_position; }
 
-    GameEvent animate(int dt, const Racket& backRacket, 
-                              const Racket& frontRacket);
+    bool animate(int dt, Racket* backRacket, Racket* frontRacket);
 };
 
 #endif
