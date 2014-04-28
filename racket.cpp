@@ -14,7 +14,7 @@ void Racket::step()
     }
 }
 
-Racket::Racket(vector2df pos, vector2df size, vector3df map_size)
+Racket::Racket(vector3df map_size, vector2df pos, vector2df size)
 {
     m_speed    = 1;
     m_position = pos;
@@ -35,8 +35,12 @@ void Racket::setTarget(const vector2df& target)
 
 void Racket::animate(int dt)
 {
+    /*
     for (int i = 0; i < dt; i++)
     {
         step();
-    }
+    }*/
+
+    m_position = m_target;
+
 }

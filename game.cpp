@@ -1,14 +1,16 @@
 #include "game.hpp"
 
 #include "ball.hpp"
+#include "racket.hpp"
 
 using namespace video;
 
 
-Game::Game(vector3df map_size, int ball_number)
+Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
 {
+    m_screen_size = screen_size;
     m_map_size    = map_size;
-    m_ball_number = ball_number;  
+    m_ball_number = ball_number;
 
 } // Game
 
@@ -16,7 +18,7 @@ Game::Game(vector3df map_size, int ball_number)
 // ----------------------------------------------------------------------------
 bool Game::init()
 {
-    m_device = createDevice(video::EDT_SOFTWARE, dimension2d<u32>(640, 480), 16,
+    m_device = createDevice(video::EDT_SOFTWARE, dimension2d<u32>(m_screen_size.X, m_screen_size.Y), 16,
         false, false, false, 0);
 
     if (!m_device) return false;
@@ -24,21 +26,31 @@ bool Game::init()
     m_video_driver  = m_device->getVideoDriver();
     m_scene_manager = m_device->getSceneManager();
     m_scene_manager->addCameraSceneNode(0, 
-            vector3df(0, 0, - m_map_size.Z / 2.0 - 1.0), 
-            vector3df(0, 0, m_map_size.Z)
+            vector3df(0, 0, - m_map_size.Z / 2.0 - 20.0), 
+            vector3df(0, 0, m_map_size.Z / 2.0)
         );
 
-    m_ball = new Ball(vector3df(0,0,0),1.2,m_map_size);
-    m_ball_node = m_scene_manager->addSphereSceneNode(1.2, 16, 0, -4);
+    m_cursor = m_device->getCursorControl();
 
-    if (!m_ball_node) return false;    
+    m_ball = new Ball(vector3df(0,0,0),1.2,m_map_size);
+    m_ball_node = m_scene_manager->addSphereSceneNode(1.2, 6, 0, -4);
+
+    if (!m_ball_node) return false;
     m_ball_node->setMaterialFlag(video::EMF_WIREFRAME, true);
     m_ball_node->setMaterialFlag(video::EMF_LIGHTING, false);
 
     m_ball->hit(vector3df(0.01, 0.02, 0.01));
 
+    m_player_racket_node = m_scene_manager->addSphereSceneNode(2.0);
+    m_player_racket_node->setScale(vector3df(1,1,0.1));
+    m_player_racket_node->setMaterialFlag(video::EMF_WIREFRAME, true);
+    m_player_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
+
     // TODO!
     // create ball
+
+    m_player_racket = new Racket(m_map_size);
+
 
 } // init
 
@@ -80,10 +92,41 @@ void Game::render()
     m_scene_manager->drawAll();
 
     drawFrame();
-     
+    /*
+    vector2df pos  = m_player_racket->getPosition();
+    vector2df size = m_player_racket->getSize();
+    m_video_driver->draw2DLine(
+        vector2d<s32>(pos.X - size.X / 2.0, pos.Y - size.Y / 2.0),
+        vector2d<s32>(pos.X + size.X / 2.0, pos.Y - size.Y / 2.0));
+    m_video_driver->draw2DLine(
+        vector2d<s32>(pos.X - size.X / 2.0, pos.Y + size.Y / 2.0),
+        vector2d<s32>(pos.X + size.X / 2.0, pos.Y + size.Y / 2.0));
+    */
+
     m_video_driver->endScene();
 } // render
 
+// ----------------------------------------------------------------------------
+void Game::racketControl()
+{
+    double x = m_cursor->getPosition().X;
+    double y = m_cursor->getPosition().Y;
+
+    x = (x / m_screen_size.X - 1.0 / 2.0) * m_map_size.X;
+    y = -(y / m_screen_size.Y - 1.0 / 2.0) * m_map_size.Y;
+
+    if (x > m_map_size.X / 2.0) x = m_map_size.X / 2.0;
+    if (x < -m_map_size.X / 2.0) x = -m_map_size.X / 2.0;
+    if (y > m_map_size.Y / 2.0) y = m_map_size.Y / 2.0;
+    if (y < -m_map_size.Y / 2.0) y = -m_map_size.Y / 2.0;
+
+    m_player_racket->setTarget(vector2df(x,y));
+    
+    vector2df pos = m_player_racket->getPosition();
+
+    m_player_racket_node->setPosition(vector3df(pos.X,pos.Y, -m_map_size.Z / 2.0));
+
+} // racketControl
 
 // ----------------------------------------------------------------------------
 void Game::animate(int dt)
@@ -91,13 +134,15 @@ void Game::animate(int dt)
     m_ball->animate(dt,*m_player_racket,*m_ai_racket);
     m_ball_node->setPosition(m_ball->getPosition());
 
+    m_player_racket->animate(dt);
+
 } // animate
 
 
 // ----------------------------------------------------------------------------
-Game* Game::createGame(vector3df map_size, int ball_number)
+Game* Game::createGame(vector2d<int> screen_size, vector3df map_size, int ball_number)
 {
-    Game* game = new Game(map_size, ball_number);
+    Game* game = new Game(screen_size,map_size, ball_number);
     
     if (!game->init())
     {
@@ -118,6 +163,7 @@ void Game::play()
     {
         render();
         currentTime = m_device->getTimer()->getTime();
+        racketControl();
         animate((currentTime - lastTime));
         lastTime = currentTime;
     }
