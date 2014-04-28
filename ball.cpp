@@ -56,12 +56,9 @@ bool Ball::handleCollision(Racket* backRacket, Racket* frontRacket)
     // front Wall ~ near lookAt << ai's side >>
     if (m_position.Z + m_radius > m_hmap_size.Z)
     {
-        m_velocity.Z *= -1;
-        /*
         if (!handleRacketCollision(frontRacket))
             return false;
-        m_position.Z = m_position.Z - 2 * (m_position.Z + m_radius - m_map_size.Z / 2.0);
-        */
+        m_position.Z = m_position.Z - 2 * (m_position.Z + m_radius - m_hmap_size.Z);
     } 
     else  // back Wall ~ near camera << player side >>
     if (m_position.Z - m_radius < -m_hmap_size.Z)

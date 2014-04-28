@@ -24,8 +24,8 @@ private:
     void step();
 
 public:
-    Racket(vector2df pos = vector2df(0,0), 
-           vector2df size = vector2df(2,1),
+    Racket(vector2df size = vector2df(2,1), 
+           vector2df pos = vector2df(0, 0),
            int life = 3);
 
     void setPosition(const vector2df& pos)              { m_position = pos;  }

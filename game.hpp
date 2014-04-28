@@ -26,19 +26,21 @@ private:
 
     vector3df                   m_hmap_size;
     int                         m_ball_number;
+    vector2df                   m_racket_size;
     
     Ball*                       m_ball;
     Racket*                     m_player_racket;
     Racket*                     m_ai_racket;
 
     ISceneNode*                 m_ball_node;
-
     ISceneNode*                 m_player_racket_node;
+    ISceneNode*                 m_ai_racket_node;
     
     bool                        m_run;
 
     Game(vector2d<int> screen_size, vector3df map_size, int ball_number);
     bool init();
+    void drawFrameElement(int z, SColor color);
     void drawFrame();
     void render();
     void racketControl();
@@ -49,7 +51,7 @@ private:
 public:
 
     static Game* createGame(vector2d<int> screen_size = vector2d<int>(640, 480),
-        vector3df map_size = vector3df(15, 10, 20),
+        vector3df map_size = vector3df(15, 10, 25),
         int ball_number = 5);
 
     void play();

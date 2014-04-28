@@ -25,29 +25,62 @@ bool Game::init()
     m_video_driver  = m_device->getVideoDriver();
     m_scene_manager = m_device->getSceneManager();
     m_scene_manager->addCameraSceneNode(0, 
-            vector3df(0, 0, - m_hmap_size.Z - 20.0), 
+            vector3df(0, 0, - m_hmap_size.Z - 16.0), 
             vector3df(0, 0, m_hmap_size.Z)
         );
 
     m_cursor = m_device->getCursorControl();
 
+    // game is paused at the begining
+    m_run = false;
+
+    // ball
     m_ball = new Ball(vector3df(0,0,0),1.2,m_hmap_size);
     m_ball_node = m_scene_manager->addSphereSceneNode(1.2, 6, 0, -4);
 
     if (!m_ball_node) return false;
     m_ball_node->setMaterialFlag(video::EMF_WIREFRAME, true);
-    m_ball_node->setMaterialFlag(video::EMF_LIGHTING, false);
+    //m_ball_node->setMaterialFlag(video::EMF_LIGHTING, false);
+    
+    m_racket_size = vector2df(2, 1);
+
+    // player racket
+    m_player_racket = new Racket(m_racket_size);
 
     m_player_racket_node = m_scene_manager->addCubeSceneNode(1.0);
     m_player_racket_node->setScale(vector3df(7,4,0.1));
     m_player_racket_node->setMaterialFlag(video::EMF_WIREFRAME, true);
-    m_player_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
+    //m_player_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
 
-    m_player_racket = new Racket();
+    // ai racket
+    m_ai_racket = new Racket(m_racket_size);
 
-    m_run = false;
+    m_ai_racket_node = m_scene_manager->addCubeSceneNode(1.0);
+    m_ai_racket_node->setScale(vector3df(7, 4, 0.1));
+    //m_ai_racket_node->setMaterialFlag(video::EMF_WIREFRAME, true);
+    m_ai_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
 
 } // init
+
+
+void Game::drawFrameElement(int z, SColor color)
+{
+    for (int i = -1; i < 2; i += 2)
+            m_video_driver->draw3DLine
+            (
+                vector3df(i * m_hmap_size.X,  m_hmap_size.Y, z),
+                vector3df(i * m_hmap_size.X, -m_hmap_size.Y, z),
+                color
+            );
+
+    for (int i = -1; i < 2; i += 2)
+            m_video_driver->draw3DLine
+            (
+                vector3df(-m_hmap_size.X, i * m_hmap_size.Y, z),
+                vector3df( m_hmap_size.X, i * m_hmap_size.Y, z),
+                color
+            );
+}
 
 // ----------------------------------------------------------------------------
 void Game::drawFrame()
@@ -57,24 +90,29 @@ void Game::drawFrame()
     m.Lighting = false;
     m_video_driver->setMaterial(m);
     m_video_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-    
+
     for (int z = -m_hmap_size.Z; z < m_hmap_size.Z; z += 5)
     {
-
-        for (int i = -1; i < 2; i += 2)
-            m_video_driver->draw3DLine(
-            vector3df(i * m_hmap_size.X, m_hmap_size.Y, z),
-            vector3df(i * m_hmap_size.X , -m_hmap_size.Y, z),
-            SColor(255, 0, 255, 0)
-            );
-
-        for (int i = -1; i < 2; i += 2)
-            m_video_driver->draw3DLine(
-            vector3df(-m_hmap_size.X, i * m_hmap_size.Y, z),
-            vector3df( m_hmap_size.X, i * m_hmap_size.Y, z),
-            SColor(255, 0, 255, 0)
-            );
+        drawFrameElement(z, SColor(255, 255, 0, 0));
     }
+
+    for (int i = -1; i < 2; i += 2)
+            m_video_driver->draw3DLine
+            (
+                vector3df(i*m_hmap_size.X, m_hmap_size.Y,  m_hmap_size.Z),
+                vector3df(i*m_hmap_size.X, m_hmap_size.Y, -m_hmap_size.Z),
+                SColor(255, 255, 0, 0)
+            );
+
+    for (int i = -1; i < 2; i += 2)
+        m_video_driver->draw3DLine
+        (
+            vector3df(i*m_hmap_size.X, -m_hmap_size.Y,  m_hmap_size.Z),
+            vector3df(i*m_hmap_size.X, -m_hmap_size.Y, -m_hmap_size.Z),
+            SColor(255, 255, 0, 0)
+        );
+    
+    drawFrameElement(m_ball->getPosition().Z, SColor(255, 0, 255, 0));
 
 } // drawFrame
 
@@ -99,16 +137,20 @@ void Game::racketControl()
     x =  (x / m_screen_size.X - 1.0 / 2.0) * m_hmap_size.X * 2;
     y = -(y / m_screen_size.Y - 1.0 / 2.0) * m_hmap_size.Y * 2;
 
-    if (x > m_hmap_size.X) x = m_hmap_size.X;
+    if (x >  m_hmap_size.X) x =  m_hmap_size.X;
     if (x < -m_hmap_size.X) x = -m_hmap_size.X;
-    if (y > m_hmap_size.Y) y = m_hmap_size.Y;
+    if (y >  m_hmap_size.Y) y =  m_hmap_size.Y;
     if (y < -m_hmap_size.Y) y = -m_hmap_size.Y;
 
     m_player_racket->setTarget(vector2df(x,y));
-    
-    vector2df pos = m_player_racket->getPosition();
+    // TODO:
+    m_ai_racket->setTarget(vector2df(x, y));
 
+    vector2df pos = m_player_racket->getPosition();
     m_player_racket_node->setPosition(vector3df(pos.X,pos.Y, -m_hmap_size.Z));
+
+    pos = m_ai_racket->getPosition();
+    m_ai_racket_node->setPosition(vector3df(pos.X, pos.Y, m_hmap_size.Z));
 
 } // racketControl
 
@@ -117,6 +159,7 @@ void Game::animate(int dt)
 {
     
     m_player_racket->animate(dt);
+    m_ai_racket->animate(dt);
 
     if (!m_ball->animate(dt, m_player_racket, m_ai_racket))
     {

@@ -14,7 +14,7 @@ void Racket::step()
     }
 }
 
-Racket::Racket(vector2df pos, vector2df size, int life)
+Racket::Racket(vector2df size, vector2df pos, int life)
 {
     m_speed    = 1;
     m_position = pos;
