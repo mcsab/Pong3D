@@ -12,7 +12,7 @@ using namespace gui;
 class Ball;
 class Racket;
 
-class Game
+class Game :IEventReceiver 
 {
 private:
 
@@ -34,6 +34,8 @@ private:
     ISceneNode*                 m_ball_node;
 
     ISceneNode*                 m_player_racket_node;
+    
+    bool                        m_run;
 
     Game(vector2d<int> screen_size, vector3df map_size, int ball_number);
     bool init();
@@ -41,6 +43,9 @@ private:
     void render();
     void racketControl();
     void animate(int dt);
+
+    bool OnEvent(const SEvent& event);
+
 public:
 
     static Game* createGame(vector2d<int> screen_size = vector2d<int>(640, 480),

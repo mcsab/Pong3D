@@ -16,8 +16,9 @@ Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
 // ----------------------------------------------------------------------------
 bool Game::init()
 {
-    m_device = createDevice(video::EDT_OPENGL, dimension2d<u32>(m_screen_size.X, m_screen_size.Y), 16,
-        false, false,  true, 0);
+    m_device = createDevice(video::EDT_OPENGL, 
+        dimension2d<u32>(m_screen_size.X, m_screen_size.Y), 16,
+        false, false,  true, this);
 
     if (!m_device) return false;
 
@@ -37,9 +38,6 @@ bool Game::init()
     m_ball_node->setMaterialFlag(video::EMF_WIREFRAME, true);
     m_ball_node->setMaterialFlag(video::EMF_LIGHTING, false);
 
-    m_ball->setVelocity(vector3df(0, 0, 0.03));
-
-
     m_player_racket_node = m_scene_manager->addCubeSceneNode(1.0);
     m_player_racket_node->setScale(vector3df(7,4,0.1));
     m_player_racket_node->setMaterialFlag(video::EMF_WIREFRAME, true);
@@ -47,6 +45,7 @@ bool Game::init()
 
     m_player_racket = new Racket();
 
+    m_run = false;
 
 } // init
 
@@ -123,6 +122,7 @@ void Game::animate(int dt)
     {
         m_ball->setPosition(vector3df(0,0,0));
         m_ball->setVelocity(vector3df(0, 0, 0));
+        m_run = false;
     }
 
     m_ball_node->setPosition(m_ball->getPosition());
@@ -131,9 +131,21 @@ void Game::animate(int dt)
 
 } // animate
 
+// ----------------------------------------------------------------------------
+bool Game::OnEvent(const SEvent& event)
+{
+    if (!m_run && event.EventType == irr::EET_MOUSE_INPUT_EVENT
+        && event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
+    {
+        m_run = true;
+        m_ball->setVelocity(vector3df(0, 0, 0.05));
+    }
+    return true;
+}
 
 // ----------------------------------------------------------------------------
-Game* Game::createGame(vector2d<int> screen_size, vector3df map_size, int ball_number)
+Game* Game::createGame(vector2d<int> screen_size, 
+                       vector3df map_size, int ball_number)
 {
     Game* game = new Game(screen_size,map_size, ball_number);
     
@@ -157,6 +169,7 @@ void Game::play()
         render();
         currentTime = m_device->getTimer()->getTime();
         racketControl();
+        
         animate((currentTime - lastTime));
         lastTime = currentTime;
     }
