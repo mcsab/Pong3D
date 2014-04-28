@@ -23,14 +23,14 @@ private:
     vector3df       m_position;
     vector3df       m_velocity;
 
-    vector3df       m_map_size;
+    vector3df       m_hmap_size;
 
     bool            handleRacketCollision(const Racket& racket);
     GameEvent       handleCollision (const Racket& backRacket, 
                                      const Racket& frontRacket);
 
 public:
-    Ball(vector3df pos, double radius, vector3df map_size);
+    Ball(vector3df pos, double radius, vector3df hmap_size);
 
     void hit(const vector3df& dv)                      { m_velocity += dv;  }
     void setPosition(const vector3df& pos)             { m_position = pos;  }

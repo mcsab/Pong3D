@@ -22,9 +22,8 @@ private:
     void step();
 
 public:
-    Racket(vector3df map_size,
-            vector2df pos = vector2df(0,0), 
-            vector2df size = vector2df(2,1));
+    Racket(vector2df pos = vector2df(0,0), 
+           vector2df size = vector2df(2,1));
 
     void setPosition(const vector2df& pos)              { m_position = pos;  }
     const vector2df& getSize() const                    { return m_size;     }

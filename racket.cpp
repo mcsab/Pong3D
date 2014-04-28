@@ -14,12 +14,11 @@ void Racket::step()
     }
 }
 
-Racket::Racket(vector3df map_size, vector2df pos, vector2df size)
+Racket::Racket(vector2df pos, vector2df size)
 {
     m_speed    = 1;
     m_position = pos;
     m_size     = size;
-    map_size   = map_size;
 }
 
 void Racket::setTarget(const vector2df& target)

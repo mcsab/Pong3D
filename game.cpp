@@ -9,7 +9,7 @@ using namespace video;
 Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
 {
     m_screen_size = screen_size;
-    m_map_size    = map_size;
+    m_hmap_size = map_size;
     m_ball_number = ball_number;
 
 } // Game
@@ -26,13 +26,13 @@ bool Game::init()
     m_video_driver  = m_device->getVideoDriver();
     m_scene_manager = m_device->getSceneManager();
     m_scene_manager->addCameraSceneNode(0, 
-            vector3df(0, 0, - m_map_size.Z / 2.0 - 20.0), 
-            vector3df(0, 0, m_map_size.Z / 2.0)
+            vector3df(0, 0, - m_hmap_size.Z - 20.0), 
+            vector3df(0, 0, m_hmap_size.Z)
         );
 
     m_cursor = m_device->getCursorControl();
 
-    m_ball = new Ball(vector3df(0,0,0),1.2,m_map_size);
+    m_ball = new Ball(vector3df(0,0,0),1.2,m_hmap_size);
     m_ball_node = m_scene_manager->addSphereSceneNode(1.2, 6, 0, -4);
 
     if (!m_ball_node) return false;
@@ -49,7 +49,7 @@ bool Game::init()
     // TODO!
     // create ball
 
-    m_player_racket = new Racket(m_map_size);
+    m_player_racket = new Racket();
 
 
 } // init
@@ -63,20 +63,20 @@ void Game::drawFrame()
     m_video_driver->setMaterial(m);
     m_video_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
     
-    for (int z = -m_map_size.Z / 2.0; z < m_map_size.Z / 2.0; z += 5)
+    for (int z = -m_hmap_size.Z; z < m_hmap_size.Z; z += 5)
     {
 
         for (int i = -1; i < 2; i += 2)
             m_video_driver->draw3DLine(
-            vector3df(i * m_map_size.X / 2.0, m_map_size.Y / 2.0, z),
-            vector3df(i * m_map_size.X / 2.0, -m_map_size.Y / 2.0, z),
+            vector3df(i * m_hmap_size.X, m_hmap_size.Y, z),
+            vector3df(i * m_hmap_size.X , -m_hmap_size.Y, z),
             SColor(255, 0, 255, 0)
             );
 
         for (int i = -1; i < 2; i += 2)
             m_video_driver->draw3DLine(
-            vector3df(-m_map_size.X / 2.0, i * m_map_size.Y / 2.0, z),
-            vector3df( m_map_size.X / 2.0, i * m_map_size.Y / 2.0, z),
+            vector3df(-m_hmap_size.X, i * m_hmap_size.Y, z),
+            vector3df( m_hmap_size.X, i * m_hmap_size.Y, z),
             SColor(255, 0, 255, 0)
             );
     }
@@ -112,19 +112,19 @@ void Game::racketControl()
     double x = m_cursor->getPosition().X;
     double y = m_cursor->getPosition().Y;
 
-    x = (x / m_screen_size.X - 1.0 / 2.0) * m_map_size.X;
-    y = -(y / m_screen_size.Y - 1.0 / 2.0) * m_map_size.Y;
+    x =  (x / m_screen_size.X - 1.0 / 2.0) * m_hmap_size.X * 2;
+    y = -(y / m_screen_size.Y - 1.0 / 2.0) * m_hmap_size.Y * 2;
 
-    if (x > m_map_size.X / 2.0) x = m_map_size.X / 2.0;
-    if (x < -m_map_size.X / 2.0) x = -m_map_size.X / 2.0;
-    if (y > m_map_size.Y / 2.0) y = m_map_size.Y / 2.0;
-    if (y < -m_map_size.Y / 2.0) y = -m_map_size.Y / 2.0;
+    if (x > m_hmap_size.X) x = m_hmap_size.X;
+    if (x < -m_hmap_size.X) x = -m_hmap_size.X;
+    if (y > m_hmap_size.Y) y = m_hmap_size.Y;
+    if (y < -m_hmap_size.Y) y = -m_hmap_size.Y;
 
     m_player_racket->setTarget(vector2df(x,y));
     
     vector2df pos = m_player_racket->getPosition();
 
-    m_player_racket_node->setPosition(vector3df(pos.X,pos.Y, -m_map_size.Z / 2.0));
+    m_player_racket_node->setPosition(vector3df(pos.X,pos.Y, -m_hmap_size.Z));
 
 } // racketControl
 

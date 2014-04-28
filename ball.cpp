@@ -27,33 +27,33 @@ GameEvent Ball::handleCollision(const Racket& backRacket,
                                 const Racket& frontRacket)
 {
     // Right Wall
-    if (m_position.X + m_radius > m_map_size.X / 2.0)
+    if (m_position.X + m_radius > m_hmap_size.X)
     {
         m_velocity.X *= -1;
-        m_position.X = m_position.X - 2 * ( m_position.X + m_radius - m_map_size.X / 2.0 );
+        m_position.X = m_position.X - 2 * (m_position.X + m_radius - m_hmap_size.X);
     }
     else // Left Wall
-    if (m_position.X - m_radius < -m_map_size.X / 2.0)
+    if (m_position.X - m_radius < -m_hmap_size.X)
     {
         m_velocity.X *= -1;
-        m_position.X = m_position.X + 2 * (fabs(m_position.X) + m_radius - m_map_size.X / 2.0);
+        m_position.X = m_position.X + 2 * (fabs(m_position.X) + m_radius - m_hmap_size.X);
     }
 
     // Top
-    if (m_position.Y + m_radius > m_map_size.Y / 2.0)
+    if (m_position.Y + m_radius > m_hmap_size.Y)
     {
         m_velocity.Y *= -1;
-        m_position.Y = m_position.Y - 2 * (m_position.Y + m_radius - m_map_size.Y / 2.0);
+        m_position.Y = m_position.Y - 2 * (m_position.Y + m_radius - m_hmap_size.Y);
     } 
     else // Floor
-    if (m_position.Y - m_radius < -m_map_size.Y / 2.0)
+    if (m_position.Y - m_radius < -m_hmap_size.Y)
     {
         m_velocity.Y *= -1;
-        m_position.Y = m_position.Y + 2 * (fabs(m_position.Y) + m_radius - m_map_size.Y / 2.0);
+        m_position.Y = m_position.Y + 2 * (fabs(m_position.Y) + m_radius - m_hmap_size.Y);
     }
 
     // front Wall ~ near lookAt << ai's side >>
-    if (m_position.Z + m_radius > m_map_size.Z / 2.0)
+    if (m_position.Z + m_radius > m_hmap_size.Z)
     {
         m_velocity.Z *= -1;
         /*
@@ -63,21 +63,21 @@ GameEvent Ball::handleCollision(const Racket& backRacket,
         */
     } 
     else  // back Wall ~ near camera << player side >>
-    if (m_position.Z - m_radius < -m_map_size.Z / 2.0)
+    if (m_position.Z - m_radius < -m_hmap_size.Z)
     {
         if (!handleRacketCollision(backRacket))
             return PLAYER_FAILED;
-        m_position.Z = m_position.Z + 2 * (fabs(m_position.Z) + m_radius - m_map_size.Z / 2.0);
+        m_position.Z = m_position.Z + 2 * (fabs(m_position.Z) + m_radius - m_hmap_size.Z);
     }
     return NOTHING;
 }
 
 // ----------------------------------------------------------------------------
-Ball::Ball(vector3df pos, double radius, vector3df map_size)
+Ball::Ball(vector3df pos, double radius, vector3df hmap_size)
 {
     m_position = pos;
     m_radius   = radius;
-    m_map_size = map_size;
+    m_hmap_size = hmap_size;
     m_velocity = vector3df(0, 0, 0);
 }
 

@@ -21,7 +21,7 @@ private:
 
     irr::gui::ICursorControl*   m_cursor;
 
-    irr::core::vector3df        m_map_size;
+    irr::core::vector3df        m_hmap_size;
     int                         m_ball_number;
     
     Ball*                       m_ball;
@@ -41,7 +41,7 @@ private:
 public:
 
     static Game* createGame(vector2d<int> screen_size = vector2d<int>(640, 480),
-        vector3df map_size = vector3df(30, 20, 40),
+        vector3df map_size = vector3df(15, 10, 20),
         int ball_number = 5);
 
     void play();
