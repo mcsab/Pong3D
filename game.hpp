@@ -5,6 +5,9 @@
 
 using namespace irr;
 using namespace core;
+using namespace scene;
+using namespace video;
+using namespace gui;
 
 class Ball;
 class Racket;
@@ -15,22 +18,22 @@ private:
 
     vector2d<int>               m_screen_size;
 
-    irr::IrrlichtDevice*        m_device;
-    irr::video::IVideoDriver*   m_video_driver;
-    irr::scene::ISceneManager*  m_scene_manager;
+    IrrlichtDevice*             m_device;
+    IVideoDriver*               m_video_driver;
+    ISceneManager*              m_scene_manager;
 
-    irr::gui::ICursorControl*   m_cursor;
+    ICursorControl*             m_cursor;
 
-    irr::core::vector3df        m_hmap_size;
+    vector3df                   m_hmap_size;
     int                         m_ball_number;
     
     Ball*                       m_ball;
     Racket*                     m_player_racket;
     Racket*                     m_ai_racket;
 
-    irr::scene::ISceneNode*     m_ball_node;
+    ISceneNode*                 m_ball_node;
 
-    irr::scene::ISceneNode*     m_player_racket_node;
+    ISceneNode*                 m_player_racket_node;
 
     Game(vector2d<int> screen_size, vector3df map_size, int ball_number);
     bool init();

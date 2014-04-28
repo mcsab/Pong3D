@@ -3,8 +3,6 @@
 #include "ball.hpp"
 #include "racket.hpp"
 
-using namespace video;
-
 
 Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
 {
@@ -18,8 +16,8 @@ Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
 // ----------------------------------------------------------------------------
 bool Game::init()
 {
-    m_device = createDevice(video::EDT_SOFTWARE, dimension2d<u32>(m_screen_size.X, m_screen_size.Y), 16,
-        false, false, false, 0);
+    m_device = createDevice(video::EDT_OPENGL, dimension2d<u32>(m_screen_size.X, m_screen_size.Y), 16,
+        false, false,  true, 0);
 
     if (!m_device) return false;
 
