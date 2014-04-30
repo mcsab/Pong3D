@@ -30,6 +30,7 @@ bool Game::init()
         );
 
     m_cursor = m_device->getCursorControl();
+	m_cursor->setVisible(false);
 
     // game is paused at the begining
     m_run = false;
@@ -42,13 +43,13 @@ bool Game::init()
     m_ball_node->setMaterialFlag(video::EMF_WIREFRAME, true);
     //m_ball_node->setMaterialFlag(video::EMF_LIGHTING, false);
     
-    m_racket_size = vector2df(2, 1);
+    m_racket_size = vector2df(6, 3);
 
     // player racket
     m_player_racket = new Racket(m_racket_size);
 
     m_player_racket_node = m_scene_manager->addCubeSceneNode(1.0);
-    m_player_racket_node->setScale(vector3df(7,4,0.1));
+    m_player_racket_node->setScale(vector3df(m_racket_size.X,m_racket_size.Y,0.1));
     m_player_racket_node->setMaterialFlag(video::EMF_WIREFRAME, true);
     //m_player_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
 
@@ -137,10 +138,14 @@ void Game::racketControl()
     x =  (x / m_screen_size.X - 1.0 / 2.0) * m_hmap_size.X * 2;
     y = -(y / m_screen_size.Y - 1.0 / 2.0) * m_hmap_size.Y * 2;
 
-    if (x >  m_hmap_size.X) x =  m_hmap_size.X;
-    if (x < -m_hmap_size.X) x = -m_hmap_size.X;
-    if (y >  m_hmap_size.Y) y =  m_hmap_size.Y;
-    if (y < -m_hmap_size.Y) y = -m_hmap_size.Y;
+	if (x >  m_hmap_size.X - m_racket_size.X / 2.0) 
+		x = m_hmap_size.X - m_racket_size.X / 2.0;
+	if (x < -m_hmap_size.X + m_racket_size.X / 2.0)
+		x = -m_hmap_size.X + m_racket_size.X / 2.0;
+	if (y >  m_hmap_size.Y - m_racket_size.Y / 2.0)
+		y =  m_hmap_size.Y - m_racket_size.Y / 2.0;
+	if (y < -m_hmap_size.Y + m_racket_size.Y / 2.0)
+		y = -m_hmap_size.Y + m_racket_size.Y / 2.0;
 
     m_player_racket->setTarget(vector2df(x,y));
     // TODO:
