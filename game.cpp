@@ -148,8 +148,9 @@ void Game::racketControl()
 		y = -m_hmap_size.Y + m_racket_size.Y / 2.0;
 
     m_player_racket->setTarget(vector2df(x,y));
+
     // TODO:
-    m_ai_racket->setTarget(vector2df(x, y));
+    m_ai_racket->setTarget(m_ball->calculatePath(m_player_racket,m_ai_racket));
 
     vector2df pos = m_player_racket->getPosition();
     m_player_racket_node->setPosition(vector3df(pos.X,pos.Y, -m_hmap_size.Z));

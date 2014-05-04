@@ -80,6 +80,36 @@ Ball::Ball(vector3df pos, double radius, vector3df hmap_size)
 }
 
 // ----------------------------------------------------------------------------
+/** This function simulate the ball's path, until it reaches the plain defined
+*   by map_size.Z and dir
+*  \return <x,y> coordinates of the ball's centerpoint
+*/
+vector2df Ball::calculatePath(Racket* backRacket,
+    Racket* frontRacket,
+    int dir)
+{
+
+    if (m_velocity.Z * dir <= 0)
+        return vector2df(0, 0);
+
+    Ball* testball = new Ball(m_position, m_radius, m_hmap_size);
+    testball->setVelocity(m_velocity);
+    
+    float z;
+    do
+    {
+        testball->animate(1, backRacket, frontRacket);
+        z = fabs((testball->getPosition()).Z) + m_radius * 1.2;
+    } while (z < m_hmap_size.Z);
+
+    vector2df result = vector2df(testball->getPosition().X, 
+                                  testball->getPosition().Y);
+    delete testball;
+    
+    return result;
+} // calculatePath
+
+// ----------------------------------------------------------------------------
 bool Ball::animate(int dt, Racket* backRacket, Racket* frontRacket)
 {
     for (int i = 0; i < dt; i++)

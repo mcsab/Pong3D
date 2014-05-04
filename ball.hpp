@@ -28,6 +28,10 @@ public:
     void setVelocity(const vector3df& vel)             { m_velocity = vel;  }
     const vector3df& getPosition() const               { return m_position; }
 
+    vector2df calculatePath(Racket* backRacket,
+                            Racket* frontRacket,
+                            int dir = 1);
+
     bool animate(int dt, Racket* backRacket, Racket* frontRacket);
 };
 

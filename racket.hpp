@@ -20,7 +20,6 @@ private:
     vector2df       m_target;
 
     int             m_life;
-
     void step();
 
 public:
