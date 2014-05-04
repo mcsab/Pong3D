@@ -1,0 +1,6 @@
+TODO:
+
+Ball velocity limit & acceleration
+Racket movement
+AI racket sticking out bugfix
+calculatePath() function calls should be reduced (only one per round)
