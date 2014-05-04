@@ -9,8 +9,8 @@ bool Ball::handleRacketCollision(Racket* racket)
     vector2df racketSize = racket->getSize();
     vector2df racketPos = racket->getPosition();
 
-    if ((fabs(racketPos.X - m_position.X) > racketSize.X + m_radius)
-        || (fabs(racketPos.Y - m_position.Y) > racketSize.Y + m_radius))
+    if ((fabs(racketPos.X - m_position.X) > racketSize.X / 2.0 + m_radius)
+        || (fabs(racketPos.Y - m_position.Y) > racketSize.Y / 2.0 + m_radius))
     {
         racket->fail();
         return false;
