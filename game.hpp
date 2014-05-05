@@ -33,12 +33,15 @@ private:
     Racket*                     m_ai_racket;
 
     ISceneNode*                 m_ball_node;
-    ISceneNode*                 m_player_racket_node;
-    ISceneNode*                 m_ai_racket_node;
+    IMeshSceneNode*             m_player_racket_node;
+    IMeshSceneNode*             m_ai_racket_node;
     
     bool                        m_run;
 
     Game(vector2d<int> screen_size, vector3df map_size, int ball_number);
+    void changeColorInMeshBuffer(IMeshBuffer* mb, const SColor& color);
+    void initPlayerRacket();
+    void initAiRacket();
     bool init();
     void drawFrameElement(int z, SColor color);
     void drawFrame();

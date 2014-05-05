@@ -14,6 +14,49 @@ Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
 
 
 // ----------------------------------------------------------------------------
+/** The Racket's color is changed by vertex manipulation 
+*   It's not the best way to do it, but I wanted to see how vertices work
+*/
+void Game::changeColorInMeshBuffer(IMeshBuffer* mb, const SColor& color)
+{
+    unsigned int vertexCount = mb->getVertexCount();
+    S3DVertex* vertices = (S3DVertex*)mb->getVertices();
+
+    for (int i = 0; i < vertexCount; i++)
+        vertices[i].Color = color;
+}
+
+// ----------------------------------------------------------------------------
+void Game::initPlayerRacket()
+{
+    m_player_racket = new Racket(m_racket_size);
+
+    m_player_racket_node = m_scene_manager->addCubeSceneNode(1.0);
+    m_player_racket_node->setScale(vector3df(m_racket_size.X, m_racket_size.Y, 0.1));
+    m_player_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
+    
+    m_player_racket_node->setMaterialType(EMT_TRANSPARENT_VERTEX_ALPHA);
+
+    changeColorInMeshBuffer(m_player_racket_node->getMesh()->getMeshBuffer(0),
+                            SColor(127.5, 0, 255, 0));
+}
+
+
+// ----------------------------------------------------------------------------
+void Game::initAiRacket()
+{
+    m_ai_racket = new Racket(m_racket_size);
+
+    m_ai_racket_node = m_scene_manager->addCubeSceneNode(1.0);
+    m_ai_racket_node->setScale(vector3df(7, 4, 0.1));
+    m_ai_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
+
+    changeColorInMeshBuffer(m_ai_racket_node->getMesh()->getMeshBuffer(0),
+                            SColor(0, 255, 0, 0));
+}
+
+
+// ----------------------------------------------------------------------------
 bool Game::init()
 {
     m_device = createDevice(video::EDT_OPENGL, 
@@ -43,23 +86,9 @@ bool Game::init()
     m_ball_node->setMaterialFlag(video::EMF_WIREFRAME, true);
     //m_ball_node->setMaterialFlag(video::EMF_LIGHTING, false);
     
-    m_racket_size = vector2df(6, 3);
-
-    // player racket
-    m_player_racket = new Racket(m_racket_size);
-
-    m_player_racket_node = m_scene_manager->addCubeSceneNode(1.0);
-    m_player_racket_node->setScale(vector3df(m_racket_size.X,m_racket_size.Y,0.1));
-    m_player_racket_node->setMaterialFlag(video::EMF_WIREFRAME, true);
-    //m_player_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
-
-    // ai racket
-    m_ai_racket = new Racket(m_racket_size);
-
-    m_ai_racket_node = m_scene_manager->addCubeSceneNode(1.0);
-    m_ai_racket_node->setScale(vector3df(7, 4, 0.1));
-    //m_ai_racket_node->setMaterialFlag(video::EMF_WIREFRAME, true);
-    m_ai_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
+    m_racket_size = vector2df(6, 3);    
+    initPlayerRacket();
+    initAiRacket();
 
 } // init
 
