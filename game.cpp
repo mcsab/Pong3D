@@ -92,11 +92,12 @@ void Game::drawFrame()
     m_video_driver->setMaterial(m);
     m_video_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
 
-    for (int z = -m_hmap_size.Z; z < m_hmap_size.Z; z += 5)
+    
+    for (int z = -m_hmap_size.Z; z <= m_hmap_size.Z; z += 5)
     {
         drawFrameElement(z, SColor(255, 255, 0, 0));
     }
-
+    
     for (int i = -1; i < 2; i += 2)
             m_video_driver->draw3DLine
             (
@@ -104,7 +105,7 @@ void Game::drawFrame()
                 vector3df(i*m_hmap_size.X, m_hmap_size.Y, -m_hmap_size.Z),
                 SColor(255, 255, 0, 0)
             );
-
+            
     for (int i = -1; i < 2; i += 2)
         m_video_driver->draw3DLine
         (
