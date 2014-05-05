@@ -131,7 +131,7 @@ void Game::render()
 } // render
 
 // ----------------------------------------------------------------------------
-void Game::racketControl()
+void Game::playerRacketControl()
 {
     double x = m_cursor->getPosition().X;
     double y = m_cursor->getPosition().Y;
@@ -150,16 +150,21 @@ void Game::racketControl()
 
     m_player_racket->setTarget(vector2df(x,y));
 
-    // TODO:
-    m_ai_racket->setTarget(m_ball->calculatePath(m_player_racket,m_ai_racket));
-
     vector2df pos = m_player_racket->getPosition();
     m_player_racket_node->setPosition(vector3df(pos.X,pos.Y, -m_hmap_size.Z));
 
+} // playerRacketControl
+
+// ----------------------------------------------------------------------------
+void Game::aiRacketControl()
+{
+    m_ai_racket->setTarget(m_ball->calculatePath(m_player_racket, m_ai_racket));
+
+    vector2df pos = m_player_racket->getPosition();
     pos = m_ai_racket->getPosition();
     m_ai_racket_node->setPosition(vector3df(pos.X, pos.Y, m_hmap_size.Z));
 
-} // racketControl
+} // aiRacketControl
 
 // ----------------------------------------------------------------------------
 void Game::animate(int dt)
@@ -218,7 +223,9 @@ void Game::play()
     {
         render();
         currentTime = m_device->getTimer()->getTime();
-        racketControl();
+        
+        playerRacketControl();
+        aiRacketControl();
         
         animate((currentTime - lastTime));
         lastTime = currentTime;

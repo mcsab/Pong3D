@@ -43,7 +43,8 @@ private:
     void drawFrameElement(int z, SColor color);
     void drawFrame();
     void render();
-    void racketControl();
+    void playerRacketControl();
+    void aiRacketControl();
     void animate(int dt);
 
     bool OnEvent(const SEvent& event);
