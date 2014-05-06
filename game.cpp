@@ -153,9 +153,9 @@ void Game::render()
 
     m_video_driver->beginScene(true, true, SColor(255, 80, 0, 170));
     
+    drawFrame();
     m_scene_manager->drawAll();
 
-    drawFrame();
     m_video_driver->endScene();
 } // render
 
