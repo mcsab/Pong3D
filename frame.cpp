@@ -47,9 +47,8 @@ void Frame::render()
     video::IVideoDriver* driver = SceneManager->getVideoDriver();
     driver->setMaterial(m_material);
     driver->setTransform(video::ETS_WORLD, IdentityMatrix);
-    driver->drawVertexPrimitiveList(&m_vertices[0], 44, 
-                                    &m_indices[0], 11, 
+    driver->drawVertexPrimitiveList(&m_vertices[0], m_vertex_count,
+                                    &m_indices[0], m_vertex_count / 4.0, 
                                     video::EVT_STANDARD, EPT_QUADS,
                                     video::EIT_16BIT);
 }
-
