@@ -11,6 +11,7 @@ using namespace gui;
 
 class Ball;
 class Racket;
+class Frame;
 
 class Game :IEventReceiver 
 {
@@ -35,6 +36,7 @@ private:
     ISceneNode*                 m_ball_node;
     IMeshSceneNode*             m_player_racket_node;
     IMeshSceneNode*             m_ai_racket_node;
+    Frame*                      m_frame;
     
     bool                        m_run;
 

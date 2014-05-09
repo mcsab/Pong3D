@@ -2,6 +2,7 @@
 
 #include "ball.hpp"
 #include "racket.hpp"
+#include "frame.hpp"
 
 
 Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
@@ -36,6 +37,7 @@ void Game::initPlayerRacket()
     m_player_racket_node->setMaterialFlag(video::EMF_LIGHTING, false);
     
     m_player_racket_node->setMaterialType(EMT_TRANSPARENT_VERTEX_ALPHA);
+
 
     changeColorInMeshBuffer(m_player_racket_node->getMesh()->getMeshBuffer(0),
                             SColor(127.5, 0, 255, 0));
@@ -75,6 +77,11 @@ bool Game::init()
     m_cursor = m_device->getCursorControl();
 	m_cursor->setVisible(false);
 
+    //frame
+    m_frame = new Frame(m_scene_manager->getRootSceneNode(),
+                        m_scene_manager, 12, m_hmap_size);
+
+
     // game is paused at the begining
     m_run = false;
 
@@ -92,70 +99,13 @@ bool Game::init()
 
 } // init
 
-
-void Game::drawFrameElement(int z, SColor color)
-{
-    for (int i = -1; i < 2; i += 2)
-            m_video_driver->draw3DLine
-            (
-                vector3df(i * m_hmap_size.X,  m_hmap_size.Y, z),
-                vector3df(i * m_hmap_size.X, -m_hmap_size.Y, z),
-                color
-            );
-
-    for (int i = -1; i < 2; i += 2)
-            m_video_driver->draw3DLine
-            (
-                vector3df(-m_hmap_size.X, i * m_hmap_size.Y, z),
-                vector3df( m_hmap_size.X, i * m_hmap_size.Y, z),
-                color
-            );
-}
-
-// ----------------------------------------------------------------------------
-void Game::drawFrame()
-{
-    SMaterial m;
-    m.Thickness = 0.3;
-    m.Lighting = false;
-    m_video_driver->setMaterial(m);
-    m_video_driver->setTransform(video::ETS_WORLD, core::IdentityMatrix);
-
-    
-    for (int z = -m_hmap_size.Z; z <= m_hmap_size.Z; z += 5)
-    {
-        drawFrameElement(z, SColor(255, 255, 0, 0));
-    }
-    
-    for (int i = -1; i < 2; i += 2)
-            m_video_driver->draw3DLine
-            (
-                vector3df(i*m_hmap_size.X, m_hmap_size.Y,  m_hmap_size.Z),
-                vector3df(i*m_hmap_size.X, m_hmap_size.Y, -m_hmap_size.Z),
-                SColor(255, 255, 0, 0)
-            );
-            
-    for (int i = -1; i < 2; i += 2)
-        m_video_driver->draw3DLine
-        (
-            vector3df(i*m_hmap_size.X, -m_hmap_size.Y,  m_hmap_size.Z),
-            vector3df(i*m_hmap_size.X, -m_hmap_size.Y, -m_hmap_size.Z),
-            SColor(255, 255, 0, 0)
-        );
-    
-    drawFrameElement(m_ball->getPosition().Z, SColor(255, 0, 255, 0));
-
-} // drawFrame
-
 // ----------------------------------------------------------------------------
 void Game::render()
 {
-
     m_video_driver->beginScene(true, true, SColor(255, 80, 0, 170));
-    
-    drawFrame();
+   
     m_scene_manager->drawAll();
-
+    
     m_video_driver->endScene();
 } // render
 
@@ -264,5 +214,6 @@ void Game::play()
 // ----------------------------------------------------------------------------
 Game::~Game()
 {
+    m_frame->drop();
     m_device->drop();
 } // ~Game
