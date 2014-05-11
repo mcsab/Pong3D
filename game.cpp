@@ -160,7 +160,7 @@ void Game::animate(int dt)
     }
 
     m_ball_node->setPosition(m_ball->getPosition());
-
+    m_frame->updateBallPos(m_ball->getPosition().Z);
     
 
 } // animate

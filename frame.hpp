@@ -11,12 +11,21 @@ using namespace core;
 class Frame :public ISceneNode
 {
 private:
-    S3DVertex*      m_vertices;
-    u16*            m_indices;
+    // z=const rectangles
+    S3DVertex*      m_z_vertices;
+    u16*            m_z_indices;
     unsigned int    m_vertex_count;
+
+    //highlight for ball position
+    S3DVertex       m_hl_vertices[4];
+    u16             m_hl_indices[4];
+
     SMaterial       m_material;
+
+    vector3df       m_hms;
 public:
     Frame(ISceneNode* parent, ISceneManager* mgr, s32 id, vector3df ms);
+    void updateBallPos(double z);
     ~Frame();
 
     virtual void OnRegisterSceneNode();
