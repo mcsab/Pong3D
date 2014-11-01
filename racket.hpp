@@ -19,8 +19,8 @@ private:
     vector2df       m_velocity;
     vector2df       m_target;
 
-    int             m_life;
-    void step();
+    u32             m_life;
+    void step(u32 dt);
 
 public:
     Racket(vector2df size = vector2df(2,1), 
@@ -35,7 +35,7 @@ public:
     const int getLife()                                 { return m_life;     }
 
     void setTarget(const vector2df& target);
-    void animate(int dt);
+    void animate(u32 dt);
 };
 
 #endif

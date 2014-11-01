@@ -22,6 +22,7 @@ private:
     IrrlichtDevice*             m_device;
     IVideoDriver*               m_video_driver;
     ISceneManager*              m_scene_manager;
+    IGUIEnvironment*            m_gui_env;
 
     ICursorControl*             m_cursor;
 
@@ -40,6 +41,9 @@ private:
     
     bool                        m_run;
 
+    u32                         m_timer;
+    IGUIStaticText*             m_timer_text;
+
     Game(vector2d<int> screen_size, vector3df map_size, int ball_number);
     void changeColorInMeshBuffer(IMeshBuffer* mb, const SColor& color);
     void initPlayerRacket();
@@ -57,8 +61,7 @@ private:
 public:
 
     static Game* createGame(vector2d<int> screen_size = vector2d<int>(640, 480),
-        vector3df map_size = vector3df(15, 10, 25),
-        int ball_number = 5);
+                    vector3df map_size = vector3df(15, 10, 25), int ball_number = 5);
 
     void play();
 

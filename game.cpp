@@ -4,6 +4,7 @@
 #include "racket.hpp"
 #include "frame.hpp"
 
+#include <string>
 
 Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
 {
@@ -13,17 +14,16 @@ Game::Game(vector2d<int> screen_size, vector3df map_size, int ball_number)
 
 } // Game
 
-
 // ----------------------------------------------------------------------------
 /** The Racket's color is changed by vertex manipulation 
 *   It's not the best way to do it, but I wanted to see how vertices work
 */
 void Game::changeColorInMeshBuffer(IMeshBuffer* mb, const SColor& color)
 {
-    unsigned int vertexCount = mb->getVertexCount();
+    unsigned int vertex_count = mb->getVertexCount();
     S3DVertex* vertices = (S3DVertex*)mb->getVertices();
 
-    for (int i = 0; i < vertexCount; i++)
+    for (int i = 0; i < vertex_count; i++)
         vertices[i].Color = color;
 }
 
@@ -68,6 +68,7 @@ bool Game::init()
     if (!m_device) return false;
 
     m_video_driver  = m_device->getVideoDriver();
+    m_gui_env       = m_device->getGUIEnvironment();
     m_scene_manager = m_device->getSceneManager();
     m_scene_manager->addCameraSceneNode(0, 
             vector3df(0, 0, - m_hmap_size.Z - 16.0), 
@@ -97,6 +98,9 @@ bool Game::init()
     initPlayerRacket();
     initAiRacket();
 
+    m_timer_text =
+        m_gui_env->addStaticText(L"0 : 0", rect<s32>(10, 10, 50, 20));
+
 } // init
 
 // ----------------------------------------------------------------------------
@@ -105,6 +109,7 @@ void Game::render()
     m_video_driver->beginScene(true, true, SColor(255, 80, 0, 170));
    
     m_scene_manager->drawAll();
+    m_gui_env->drawAll();
     
     m_video_driver->endScene();
 } // render
@@ -139,8 +144,7 @@ void Game::aiRacketControl()
 {
     m_ai_racket->setTarget(m_ball->calculatePath(m_player_racket, m_ai_racket));
 
-    vector2df pos = m_player_racket->getPosition();
-    pos = m_ai_racket->getPosition();
+    vector2df pos = m_ai_racket->getPosition();
     m_ai_racket_node->setPosition(vector3df(pos.X, pos.Y, m_hmap_size.Z));
 
 } // aiRacketControl
@@ -148,7 +152,18 @@ void Game::aiRacketControl()
 // ----------------------------------------------------------------------------
 void Game::animate(int dt)
 {
-    
+    if (m_run)
+    {
+        m_timer += dt;
+
+        std::string  sec = std::to_string((m_timer / 1000) % 60);
+        std::string  min = std::to_string((m_timer / 1000) / 60);
+        std::string s = min + " : " + sec;
+        stringw sw(s.c_str());
+
+        m_timer_text->setText(sw.c_str());
+    }
+
     m_player_racket->animate(dt);
     m_ai_racket->animate(dt);
 
@@ -172,7 +187,8 @@ bool Game::OnEvent(const SEvent& event)
         && event.MouseInput.Event == EMIE_LMOUSE_PRESSED_DOWN)
     {
         m_run = true;
-        m_ball->setVelocity(vector3df(0, 0, 0.05));
+        m_ball->setVelocity(vector3df(0, 0, -0.05));
+        m_timer = 0;
     }
     return true;
 }
@@ -196,18 +212,18 @@ Game* Game::createGame(vector2d<int> screen_size,
 // ----------------------------------------------------------------------------
 void Game::play()
 {
-    u32 currentTime;
-    u32 lastTime = m_device->getTimer()->getTime();
+    u32 current_time;
+    u32 last_time = m_device->getTimer()->getTime();
     while (m_device->run())
     {
         render();
-        currentTime = m_device->getTimer()->getTime();
+        current_time = m_device->getTimer()->getTime();
         
         playerRacketControl();
         aiRacketControl();
         
-        animate((currentTime - lastTime));
-        lastTime = currentTime;
+        animate((current_time - last_time));
+        last_time = current_time;
     }
 } // play
 
