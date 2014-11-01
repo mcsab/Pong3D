@@ -19,7 +19,7 @@ private:
     vector3df       m_hmap_size;
 
     bool            handleRacketCollision(Racket* racket);
-    bool            handleCollision (Racket* backRacket, Racket* frontRacket);
+    bool            handleCollision (Racket* back_racket, Racket* front_racket);
 
 public:
     Ball(vector3df pos, double radius, vector3df hmap_size);
@@ -28,11 +28,11 @@ public:
     void setVelocity(const vector3df& vel)             { m_velocity = vel;  }
     const vector3df& getPosition() const               { return m_position; }
 
-    vector2df calculatePath(Racket* backRacket,
-                            Racket* frontRacket,
+    vector2df calculatePath(Racket* back_racket,
+                            Racket* front_racket,
                             int dir = 1);
 
-    bool animate(int dt, Racket* backRacket, Racket* frontRacket);
+    bool animate(int dt, Racket* back_racket, Racket* front_racket);
 };
 
 #endif

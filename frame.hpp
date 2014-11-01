@@ -31,15 +31,12 @@ public:
     virtual void OnRegisterSceneNode();
     virtual void render();
 
-    //BoundingBox is not used, as automaticculling is disablead
-    virtual const aabbox3d<f32>& getBoundingBox() const
-        {return aabbox3d<f32>();}
-
-    virtual u32 getMaterialCount() const
-        {return 1;}
-
-    virtual SMaterial& getMaterial(u32 i)
-        {return m_material;}
+    //BoundingBox is not used, as automatic culling is disablead
+    virtual const aabbox3d<f32>& getBoundingBox() const   { return aabbox3d<f32>(); }
+                                                            
+    virtual u32 getMaterialCount() const                  { return 1; }
+                                                            
+    virtual SMaterial& getMaterial(u32 i)                 { return m_material; }
 
 };
 

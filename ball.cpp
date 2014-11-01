@@ -6,19 +6,19 @@
 
 bool Ball::handleRacketCollision(Racket* racket)
 {
-    vector2df racketSize = racket->getSize();
-    vector2df racketPos = racket->getPosition();
+    vector2df racket_size = racket->getSize();
+    vector2df racket_pos = racket->getPosition();
 
-    if ((fabs(racketPos.X - m_position.X) > racketSize.X / 2.0 + m_radius)
-        || (fabs(racketPos.Y - m_position.Y) > racketSize.Y / 2.0 + m_radius))
+    if ((fabs(racket_pos.X - m_position.X) > racket_size.X / 2.0 + m_radius)
+        || (fabs(racket_pos.Y - m_position.Y) > racket_size.Y / 2.0 + m_radius))
     {
         racket->fail();
         return false;
     }
-    vector2df racketVelocity = racket->getVelocity();
+    vector2df racket_velocity = racket->getVelocity();
 
-    m_velocity.X += racketVelocity.X * 0.01;
-    m_velocity.Y += racketVelocity.Y * 0.01;
+    m_velocity.X += racket_velocity.X * 0.3;
+    m_velocity.Y += racket_velocity.Y * 0.3;
     m_velocity.Z *= -1;
 
     return true;
@@ -112,10 +112,7 @@ vector2df Ball::calculatePath(Racket* backRacket,
 // ----------------------------------------------------------------------------
 bool Ball::animate(int dt, Racket* backRacket, Racket* frontRacket)
 {
-    for (int i = 0; i < dt; i++)
-    {
-        m_position += m_velocity;
-        if (!handleCollision(backRacket, frontRacket)) return false;
-    }
+    m_position += m_velocity * dt;
+    if (!handleCollision(backRacket, frontRacket)) return false;
     return true;
 }
